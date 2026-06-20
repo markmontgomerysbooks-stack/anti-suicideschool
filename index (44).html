@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anti-Suicide School</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Georgia,serif;background:#f9f9f7;color:#1a1a1a;min-height:100vh}
+
+/* TOP BARS */
+.top-bar{background:#085041;color:#fff;padding:14px 20px;display:flex;align-items:center;gap:12px}
+.top-bar h1{font-size:1.1rem;font-weight:700}
+.top-bar span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.crisis-bar{background:#7B1818;color:#fff;padding:14px 20px;font-family:sans-serif;font-size:14px;line-height:1.6}
+.crisis-bar a{color:#FFD0D0;font-weight:700;text-decoration:none}
+.disclaimer{background:#FFF8F0;border-bottom:2px solid #F0D9BE;padding:14px 20px;font-family:sans-serif;font-size:13px;color:#5A4422;line-height:1.6}
+.disclaimer p{margin-bottom:6px}
+.disclaimer p:last-child{margin-bottom:0}
+
+/* EDIT BUTTON */
+#edit-btn{position:fixed;top:14px;right:14px;background:#1a1a1a;color:#fff;border:none;padding:7px 14px;border-radius:6px;font-size:12px;cursor:pointer;z-index:999;opacity:.7}
+#edit-btn:hover{opacity:1}
+
+/* HEADER */
+.hero{text-align:center;padding:3rem 1.5rem 1.5rem;max-width:700px;margin:0 auto}
+.hero .eyebrow{font-family:sans-serif;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#1D9E75;margin-bottom:1rem}
+.hero h2{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:400;line-height:1.2;margin-bottom:1rem}
+.hero p{font-size:1rem;line-height:1.75;color:#444}
+.divider{width:48px;height:2px;background:#5DCAA5;margin:1.5rem auto}
+
+/* TOPIC GRID */
+#home-view{max-width:880px;margin:0 auto;padding:0 1.2rem 4rem}
+.section-label{font-family:sans-serif;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#888;text-align:center;margin-bottom:1.2rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.topic-btn{background:#fff;border:1px solid rgba(0,0,0,.1);border-radius:12px;padding:16px 12px;text-align:left;cursor:pointer;transition:transform .12s,box-shadow .15s,border-color .15s;display:flex;flex-direction:column;gap:7px}
+.topic-btn:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.07);border-color:#5DCAA5}
+.topic-btn .icon{font-size:20px}
+.topic-btn .name{font-family:sans-serif;font-size:13px;font-weight:600;color:#1a1a1a;line-height:1.3}
+.topic-btn .sub{font-family:sans-serif;font-size:11px;color:#888;line-height:1.4}
+
+/* JOURNEY VIEW */
+#journey-view{display:none;max-width:700px;margin:0 auto;padding:0 1.2rem 4rem}
+.back-btn{background:none;border:none;color:#1D9E75;font-family:sans-serif;font-size:13px;cursor:pointer;padding:0;margin-bottom:1.5rem;display:inline-block}
+.journey-label{font-family:sans-serif;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#1D9E75;margin-bottom:.4rem}
+.journey-title{font-size:clamp(1.4rem,3vw,2rem);font-weight:400;margin-bottom:1.5rem}
+
+/* PROGRESS */
+.progress{display:flex;gap:5px;margin-bottom:2rem}
+.pip{height:4px;flex:1;border-radius:2px;background:rgba(0,0,0,.1);transition:background .3s}
+.pip.done{background:#1D9E75}
+.pip.active{background:#5DCAA5}
+
+/* SCREEN CARD */
+.card{background:#fff;border:1px solid rgba(0,0,0,.1);border-radius:16px;padding:2rem;min-height:240px;margin-bottom:1.5rem}
+.card.affirmation{background:#E1F5EE;border-color:#5DCAA5}
+.card.reflection{background:#EEEDFE;border-color:#AFA9EC}
+.card.tip{background:#FAEEDA;border-color:#FAC775}
+.card-eyebrow{font-family:sans-serif;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#888;margin-bottom:.8rem}
+.card.affirmation .card-eyebrow{color:#085041}
+.card.reflection .card-eyebrow{color:#534AB7}
+.card.tip .card-eyebrow{color:#BA7517}
+.card-title{font-size:1.3rem;font-weight:400;margin-bottom:.9rem;line-height:1.3}
+.card.affirmation .card-title{color:#085041}
+.card.reflection .card-title{color:#534AB7}
+.card.tip .card-title{color:#BA7517}
+.card-body{font-size:.95rem;line-height:1.8;color:#444;white-space:pre-wrap}
+
+/* NAV */
+.screen-nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:2rem}
+.btn-prev{background:none;border:1px solid rgba(0,0,0,.2);color:#888;border-radius:8px;padding:10px 20px;font-size:14px;cursor:pointer;font-family:Georgia,serif}
+.btn-prev:disabled{opacity:.3;cursor:default}
+.btn-next{background:#1D9E75;border:none;color:#fff;border-radius:8px;padding:10px 24px;font-size:14px;cursor:pointer;font-family:Georgia,serif}
+.counter{font-family:sans-serif;font-size:13px;color:#888}
+
+/* AI PANEL */
+.ai-panel{background:#fff;border:1px solid rgba(0,0,0,.1);border-radius:16px;padding:1.5rem}
+.ai-header{display:flex;align-items:center;gap:10px;margin-bottom:1rem}
+.ai-badge{background:#1a1a1a;color:#fff;font-family:sans-serif;font-size:10px;letter-spacing:.1em;padding:3px 8px;border-radius:4px;text-transform:uppercase}
+.ai-header span{font-family:sans-serif;font-size:14px;font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1rem}
+.chip{background:#f9f9f7;border:1px solid rgba(0,0,0,.15);border-radius:20px;padding:6px 14px;font-family:sans-serif;font-size:12px;color:#444;cursor:pointer}
+.chip:hover{border-color:#1D9E75;color:#085041}
+.ai-row{display:flex;gap:8px}
+.ai-input{flex:1;border:1px solid rgba(0,0,0,.2);border-radius:8px;padding:10px 14px;font-family:Georgia,serif;font-size:14px;color:#1a1a1a;background:#f9f9f7}
+.ai-send{background:#1D9E75;border:none;color:#fff;border-radius:8px;padding:10px 18px;font-size:13px;cursor:pointer;font-family:sans-serif}
+.ai-out{display:none;margin-top:1rem;padding:1rem;background:#f9f9f7;border:1px solid rgba(0,0,0,.1);border-radius:8px;font-size:14px;line-height:1.75;color:#444;white-space:pre-wrap}
+.dots{display:inline-flex;gap:4px;align-items:center}
+.dots span{width:6px;height:6px;border-radius:50%;background:#5DCAA5;animation:blink 1.2s infinite}
+.dots span:nth-child(2){animation-delay:.2s}
+.dots span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1);opacity:1}}
+
+/* MODAL */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:#fff;border-radius:16px;padding:2rem;width:90%;max-width:640px;max-height:85vh;overflow-y:auto}
+.modal h3{font-size:18px;margin-bottom:1.5rem}
+.field{margin-bottom:1.2rem}
+.field label{display:block;font-family:sans-serif;font-size:12px;color:#888;margin-bottom:5px;letter-spacing:.04em;text-transform:uppercase}
+.field input,.field textarea{width:100%;border:1px solid rgba(0,0,0,.2);border-radius:8px;padding:9px 12px;font-family:Georgia,serif;font-size:14px;color:#1a1a1a;background:#f9f9f7;resize:vertical}
+.field textarea{min-height:80px}
+.modal-btns{display:flex;gap:10px;margin-top:1.5rem}
+.btn-save{background:#1D9E75;color:#fff;border:none;border-radius:8px;padding:10px 22px;font-size:14px;cursor:pointer;font-family:Georgia,serif}
+.btn-cancel{background:none;border:1px solid rgba(0,0,0,.2);color:#888;border-radius:8px;padding:10px 18px;font-size:14px;cursor:pointer;font-family:Georgia,serif}
+
+footer{text-align:center;padding:2rem;font-family:sans-serif;font-size:12px;color:#aaa;border-top:1px solid rgba(0,0,0,.08)}
+
+@media(max-width:500px){
+  .grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
+  .card{padding:1.4rem 1rem}
+  .hero{padding:2rem 1rem 1rem}
+}
+</style>
+</head>
+<body>
+
+<button id="edit-btn" onclick="openModal()">✦ Edit Site</button>
+
+<!-- TOP BARS -->
+<div class="top-bar">
+  <div>
+    <h1>🕊 Anti-Suicide School</h1>
+  </div>
+  <span>A community of recovery &amp; hope</span>
+</div>
+
+<div class="crisis-bar">
+  📞 <strong>If you are in crisis right now, please call or text <a href="tel:988">988</a></strong> — the Suicide &amp; Crisis Lifeline is free, confidential, and available 24/7. You do not have to be alone in this moment.
+</div>
+
+<div class="disclaimer">
+  <p>⚠️ <strong>Not medical advice.</strong> This is a peer community where people share stories of recovery, coping, and hope. Nothing here replaces a licensed mental health professional. If you are struggling, please reach out to a counselor, therapist, or crisis line.</p>
+  <p>🌱 <strong>We are just getting started.</strong> Anti-Suicide School is a new and growing community. Content and features are being added all the time — thank you for your patience as we build this space together.</p>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="eyebrow" id="disp-eyebrow">A guide for the mind</div>
+  <h2 id="disp-title">You Are Not Your Thoughts</h2>
+  <p id="disp-intro">Whatever is weighing on you right now, you do not have to face it alone. Choose what you're experiencing below and move through it, one gentle step at a time. This space is for you.</p>
+  <div class="divider"></div>
+</div>
+
+<!-- HOME VIEW -->
+<div id="home-view">
+  <p class="section-label">Choose what you are experiencing</p>
+  <div class="grid" id="topic-grid"></div>
+</div>
+
+<!-- JOURNEY VIEW -->
+<div id="journey-view">
+  <button class="back-btn" onclick="goHome()">← Back to all topics</button>
+  <div class="journey-label" id="j-label"></div>
+  <div class="journey-title" id="j-title"></div>
+  <div class="progress" id="j-progress"></div>
+  <div class="card" id="j-card">
+    <div class="card-eyebrow" id="j-eyebrow"></div>
+    <div class="card-title" id="j-ctitle"></div>
+    <div class="card-body" id="j-body"></div>
+  </div>
+  <div class="screen-nav">
+    <button class="btn-prev" id="btn-prev" onclick="prev()">← Previous</button>
+    <span class="counter" id="j-counter"></span>
+    <button class="btn-next" id="btn-next" onclick="next()">Next →</button>
+  </div>
+  <div class="ai-panel">
+    <div class="ai-header">
+      <span class="ai-badge">AI</span>
+      <span>Ask for deeper support</span>
+    </div>
+    <div class="chips" id="j-chips"></div>
+    <div class="ai-row">
+      <input class="ai-input" id="ai-in" placeholder="Ask anything about what you are experiencing…" />
+      <button class="ai-send" onclick="askAI()">Ask</button>
+    </div>
+    <div class="ai-out" id="ai-out"></div>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <h3>Edit Site Introduction</h3>
+    <div class="field"><label>Eyebrow (small text)</label><input id="m-eyebrow" type="text"></div>
+    <div class="field"><label>Main Title</label><input id="m-title" type="text"></div>
+    <div class="field"><label>Introduction paragraph</label><textarea id="m-intro"></textarea></div>
+    <div class="modal-btns">
+      <button class="btn-save" onclick="saveModal()">Save</button>
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<footer id="disp-footer">Anti-Suicide School · Not medical advice · Call or text 988 if you are in crisis</footer>
+
+<script>
+var topics = [
+  {name:"Anxiety",icon:"🌊",sub:"Worry & nervousness",color:"#5DCAA5",
+   chips:["How do I calm anxiety quickly?","What is anxiety really?","Breathing exercises"],
+   screens:[
+    {type:"info",ey:"Understanding emotions",ti:"Anxiety is your body's alarm",bo:"Anxiety isn't a flaw — it's your nervous system trying to protect you. It becomes a problem when the alarm stays on even when there's no real danger. You can learn to turn it down."},
+    {type:"affirmation",ey:"A truth for you",ti:"You have survived every anxious moment so far",bo:"Look back at every time anxiety told you something terrible would happen. You made it through. That record is 100%. Your body knows how to come back to calm."},
+    {type:"info",ey:"Understanding thoughts",ti:"Anxious thoughts are not facts",bo:"Your mind offers anxious thoughts as warnings. But thoughts are not reality — they are mental events, like clouds passing through the sky. You can notice them without believing them."},
+    {type:"tip",ey:"A practice",ti:"The 4-7-8 breath",bo:"Breathe in for 4 counts. Hold for 7. Breathe out slowly for 8.\n\nDo this 3 times. It activates your parasympathetic nervous system — the rest and digest system — and physically signals safety to your body."},
+    {type:"reflection",ey:"A question for you",ti:"What would you say to a friend?",bo:"Imagine a close friend was feeling exactly what you feel right now. What would you say to them? Say that to yourself. You deserve the same compassion you would offer someone you love."}
+  ]},
+  {name:"Depression",icon:"🌧",sub:"Low mood & emptiness",color:"#7F77DD",
+   chips:["Why do I feel numb?","Small steps when depressed","Depression vs sadness"],
+   screens:[
+    {type:"info",ey:"Understanding depression",ti:"Depression is an illness, not a weakness",bo:"Depression changes the chemistry of your brain, making even simple things feel impossibly heavy. It is not your fault, and it does not mean something is permanently wrong with you."},
+    {type:"affirmation",ey:"A truth",ti:"Feeling nothing is still feeling something",bo:"Numbness, emptiness, and flatness are how depression speaks. The fact that you are here, reading this, means some part of you is still reaching out. That matters."},
+    {type:"tip",ey:"A small step",ti:"Do one tiny thing",bo:"Depression shrinks our world. The antidote is movement, even tiny movement. Make your bed. Step outside for two minutes. Send one text.\n\nAction comes before motivation, not after."},
+    {type:"reflection",ey:"A question",ti:"When did you last feel even slightly okay?",bo:"What was happening then? Who were you with? Depression makes us forget that good moments have existed. Even small good moments are information."}
+  ]},
+  {name:"Intrusive thoughts",icon:"⚡",sub:"Unwanted mental images",color:"#D85A30",
+   chips:["Are intrusive thoughts normal?","Why can't I stop these thoughts?","OCD and intrusive thoughts"],
+   screens:[
+    {type:"info",ey:"What they are",ti:"Intrusive thoughts are not intentions",bo:"Having a disturbing thought does not mean you want it to happen or that it reflects who you are. Virtually everyone has intrusive thoughts. The content of the thought is not the problem."},
+    {type:"affirmation",ey:"A truth",ti:"The thought is not you",bo:"You are the one noticing the thought. The observer cannot be the same as what is being observed. You are the sky; the thought is weather passing through."},
+    {type:"tip",ey:"What to do",ti:"Notice and name it",bo:"The harder you fight an intrusive thought, the stronger it gets. Instead, try: \"I notice I am having the thought that ___.\"\n\nThis small shift creates distance. You become the watcher, not the thought."}
+  ]},
+  {name:"Shame",icon:"🔥",sub:"\"I am bad\"",color:"#993C1D",
+   chips:["Shame vs guilt","How to process shame","Why do I feel so ashamed?"],
+   screens:[
+    {type:"info",ey:"Understanding shame",ti:"Shame says I am bad. Guilt says I did something bad.",bo:"This distinction matters. Guilt can motivate repair. Shame paralyzes. Shame grows in silence and secrecy, and it shrinks when it meets compassion."},
+    {type:"affirmation",ey:"A truth",ti:"You are more than your worst moments",bo:"Every human being contains multitudes. Your mistakes and failures are real — but they are not the whole story. You are also your kindnesses, your intentions, and your capacity to grow."},
+    {type:"tip",ey:"A practice",ti:"Speak your shame to one safe person",bo:"Shame researcher Brené Brown found that shame cannot survive being spoken aloud in the presence of empathy. You do not need to confess to everyone — just one trusted person."}
+  ]},
+  {name:"Anger",icon:"🔴",sub:"Rage & resentment",color:"#E24B4A",
+   chips:["Why am I always angry?","Anger management tools","Is anger healthy?"],
+   screens:[
+    {type:"info",ey:"Understanding anger",ti:"Anger is a signal, not a verdict",bo:"Anger tells you that something feels unfair, threatened, or violated. It is not inherently bad. The question is not whether to feel it, but how to respond to what it is pointing at."},
+    {type:"tip",ey:"Before you react",ti:"The 90-second rule",bo:"Neuroscientist Jill Bolte Taylor found that the physiological surge of emotion lasts about 90 seconds. After that, you are choosing to keep it going.\n\nWait 90 seconds before responding. Let the wave pass."},
+    {type:"reflection",ey:"A question",ti:"What is the hurt beneath the anger?",bo:"Anger is often the outward layer protecting a deeper wound — rejection, fear, grief, or injustice. Ask yourself: what am I actually feeling underneath this?"}
+  ]},
+  {name:"Fear",icon:"🌑",sub:"Terror & dread",color:"#3C3489",
+   chips:["How to face my fears","Fear vs anxiety","What fear does in the brain"],
+   screens:[
+    {type:"info",ey:"About fear",ti:"Fear is your brain's oldest protection",bo:"The amygdala, deep in your brain, scans constantly for danger. When it fires, your body prepares to fight or flee. This system kept your ancestors alive. But it cannot always tell the difference between a tiger and a difficult conversation."},
+    {type:"tip",ey:"A practice",ti:"Name it to tame it",bo:"Naming your fear out loud or in writing activates the prefrontal cortex and reduces amygdala activity. Just say: \"I feel afraid of ___.\"\n\nWords bring the rational mind back online."},
+    {type:"affirmation",ey:"A truth",ti:"Courage is not the absence of fear",bo:"Every person you admire for their bravery has been afraid. Courage is moving with fear, not without it."}
+  ]},
+  {name:"Grief",icon:"🕊",sub:"Loss & bereavement",color:"#5F5E5A",
+   chips:["Stages of grief","Grieving a life change","When does grief get easier?"],
+   screens:[
+    {type:"info",ey:"About grief",ti:"Grief is not a problem to solve",bo:"Grief is the price of love. It does not move in neat stages or follow a timeline. It comes in waves, sometimes after you thought it had passed. That is not weakness — it is a sign of how much you cared."},
+    {type:"affirmation",ey:"A truth",ti:"You do not have to get over loss",bo:"You do not get over grief. You learn to carry it. Over time you grow stronger, and find ways to carry it alongside joy."},
+    {type:"reflection",ey:"A question",ti:"What do you most want to remember?",bo:"Grief often focuses on what was lost. But memory is a form of love. What do you want to hold onto?"}
+  ]},
+  {name:"Low self-worth",icon:"🪞",sub:"\"I am not enough\"",color:"#185FA5",
+   chips:["How to build self-esteem","Why do I hate myself?","What is self-worth?"],
+   screens:[
+    {type:"info",ey:"What it is",ti:"Self-worth is not earned — it is inherent",bo:"You were born with inherent worth. It was not given to you by achievement or approval, and it cannot be taken away by failure or rejection."},
+    {type:"affirmation",ey:"A truth",ti:"You are enough right now, as you are",bo:"Not when you are thinner, more successful, or more healed. Right now. The self you are today deserves care."},
+    {type:"tip",ey:"A practice",ti:"Keep an evidence journal",bo:"Your inner critic is excellent at cherry-picking evidence for its case. Counter it deliberately. Each day, write down one thing you did well or one quality you showed up with."}
+  ]},
+  {name:"Loneliness",icon:"🌃",sub:"Disconnection & isolation",color:"#0F6E56",
+   chips:["Lonely even around people?","How to make deeper connections","Is loneliness bad for health?"],
+   screens:[
+    {type:"info",ey:"About loneliness",ti:"Loneliness is a signal, not a sentence",bo:"Like hunger signals that you need food, loneliness signals that you need connection. It does not mean you are unlikeable or that belonging is unavailable to you."},
+    {type:"affirmation",ey:"A truth",ti:"You are not alone in feeling alone",bo:"Loneliness is one of the most common human experiences, and one of the least spoken about. Right now, millions of people are feeling exactly what you are feeling."},
+    {type:"tip",ey:"A small step",ti:"The 5-minute reach-out",bo:"Send one message to one person. It does not need to say much. \"Thinking of you\" is enough. Connection starts with a small signal."}
+  ]},
+  {name:"Panic",icon:"💨",sub:"Panic attacks",color:"#639922",
+   chips:["What happens in a panic attack?","How to stop a panic attack","Panic vs heart attack"],
+   screens:[
+    {type:"info",ey:"About panic",ti:"A panic attack cannot hurt you",bo:"Panic attacks feel terrifying — your heart races, you cannot breathe, and it feels like you might die. But a panic attack, while awful, is not medically dangerous. It will pass. Every one has."},
+    {type:"tip",ey:"In the moment",ti:"The 5-4-3-2-1 grounding technique",bo:"Name 5 things you can see. 4 you can touch. 3 you can hear. 2 you can smell. 1 you can taste.\n\nThis brings your nervous system back to the present moment and interrupts the panic loop."},
+    {type:"affirmation",ey:"A truth",ti:"This feeling will pass",bo:"The peak of a panic attack typically lasts less than 10 minutes. Your body cannot sustain the adrenaline surge indefinitely. Ride it like a wave. It always reaches shore."}
+  ]},
+  {name:"Trauma",icon:"🌿",sub:"Past wounds & PTSD",color:"#3B6D11",
+   chips:["What is trauma?","Big T vs little t trauma","Trauma and the body"],
+   screens:[
+    {type:"info",ey:"About trauma",ti:"Trauma lives in the body",bo:"Trauma is not just a memory — it is a physical imprint. Your nervous system learned that the world was unsafe, and it has been protecting you ever since. Your reactions make sense given what you have been through."},
+    {type:"affirmation",ey:"A truth",ti:"Healing is possible, even from very deep wounds",bo:"The brain is neuroplastic — it can form new pathways. You are not permanently broken. People recover from extraordinary pain. Healing is not linear, but it is real."},
+    {type:"reflection",ey:"A question",ti:"What does your body need right now?",bo:"Trauma work often starts with the body: safety, warmth, rhythm, rest. Before exploring the story, ask: what physical thing would feel gentle and nourishing right now?"}
+  ]},
+  {name:"Overthinking",icon:"🔄",sub:"Rumination & spiraling",color:"#BA7517",
+   chips:["How to stop overthinking","Why does my brain loop?","Overthinking and anxiety"],
+   screens:[
+    {type:"info",ey:"About overthinking",ti:"Overthinking is your brain trying to solve for certainty",bo:"Your mind believes that if it analyzes long enough, it can eliminate all risk. It cannot — but it keeps trying. This is exhausting and rarely helpful."},
+    {type:"tip",ey:"A tool",ti:"Set a worry window",bo:"Give yourself 15 minutes per day to think about everything that concerns you. Write it down. When worries arise outside that window, tell yourself: that goes in the worry window."},
+    {type:"reflection",ey:"A question",ti:"Will this matter in 5 years?",bo:"Not as a dismissal of your feelings, but as a genuine question. The things we spiral about most urgently are often not the things that actually shape our lives."}
+  ]},
+  {name:"Perfectionism",icon:"🎯",sub:"Never good enough",color:"#533489",
+   chips:["Is perfectionism bad?","How to overcome perfectionism","Perfectionism and anxiety"],
+   screens:[
+    {type:"info",ey:"About perfectionism",ti:"Perfectionism is fear in a productive disguise",bo:"Perfectionism looks like high standards from the outside. But inside, it is usually the terror of judgment or failure. It tends to prevent us from ever starting — or finishing."},
+    {type:"affirmation",ey:"A truth",ti:"Done is better than perfect",bo:"The work you actually complete changes the world. The work you perfect in your mind never leaves it. Your imperfect contribution is infinitely more valuable than your withheld masterpiece."},
+    {type:"tip",ey:"A practice",ti:"The 80% rule",bo:"When the work is 80% done, release it. The final 20% rarely changes outcomes as much as your anxiety believes. Practice finishing, not perfecting."}
+  ]},
+  {name:"Burnout",icon:"🕯",sub:"Exhaustion & depletion",color:"#3C3489",
+   chips:["Signs of burnout","Burnout vs depression","How long to recover from burnout?"],
+   screens:[
+    {type:"info",ey:"About burnout",ti:"Burnout is depletion, not weakness",bo:"Burnout comes from sustained output without recovery. It is not a character flaw — it is a structural problem. You gave too much for too long without adequate replenishment."},
+    {type:"tip",ey:"Recovery starts here",ti:"Rest is not a reward — it is a requirement",bo:"You do not have to earn rest. Begin by protecting one block of time per day that belongs only to you."},
+    {type:"reflection",ey:"A question",ti:"What has kept you going that no longer works?",bo:"Burnout often follows a long period of running on willpower or obligation. What were you sustaining yourself on? What would you need to actually refill?"}
+  ]},
+  {name:"Self-doubt",icon:"❓",sub:"\"Can I do this?\"",color:"#185FA5",
+   chips:["How to build confidence","Why do I doubt myself?","Imposter syndrome"],
+   screens:[
+    {type:"info",ey:"About self-doubt",ti:"Self-doubt is the companion of growth",bo:"The most capable people tend to have the most self-doubt, because they know enough to know what they do not know. Doubt is not evidence of inadequacy — it is evidence of awareness."},
+    {type:"affirmation",ey:"A truth",ti:"You have figured out hard things before",bo:"Think back. There were things you were not sure you could do. You did some of them. That happened — and it will happen again."}
+  ]},
+  {name:"Sleep problems",icon:"🌙",sub:"Insomnia & restlessness",color:"#26215C",
+   chips:["Why can't I sleep?","Sleep hygiene tips","Anxiety and insomnia"],
+   screens:[
+    {type:"info",ey:"About sleep",ti:"Sleep is where healing happens",bo:"During sleep, your brain processes emotion, consolidates memory, and clears metabolic waste. Poor sleep makes every mental health challenge harder. It is not a luxury — it is maintenance."},
+    {type:"tip",ey:"Tonight",ti:"The sleep hygiene basics",bo:"Same bedtime and wake time every day.\nNo screens 30 minutes before bed.\nKeep the room cool and dark.\nIf you cannot sleep after 20 minutes, get up and do something calm.\n\nConsistency matters more than duration."}
+  ]},
+  {name:"Body image",icon:"🌺",sub:"How I see myself",color:"#D4537E",
+   chips:["How to improve body image","Why do I hate my body?","Body neutrality explained"],
+   screens:[
+    {type:"info",ey:"About body image",ti:"What you see in the mirror is not objective",bo:"Negative body image distorts perception. The critical voice you hear about your body is not telling you the truth about what others see — or what your body deserves."},
+    {type:"affirmation",ey:"A truth",ti:"Your body has kept you alive",bo:"Whatever you feel about its appearance, your body breathes, circulates blood, heals wounds, and carries you through every day. It deserves more gratitude than criticism."}
+  ]},
+  {name:"Relationship pain",icon:"💔",sub:"Conflict & heartbreak",color:"#993556",
+   chips:["How to heal from heartbreak","Setting boundaries","Attachment styles"],
+   screens:[
+    {type:"info",ey:"About relationship pain",ti:"Heartbreak is real pain — not metaphor",bo:"Brain scans show that social rejection activates the same neural pathways as physical pain. Your heartbreak is not being dramatic. It is a biological event, and it hurts."},
+    {type:"reflection",ey:"A question",ti:"What are you actually grieving?",bo:"Sometimes we grieve the person. Sometimes we grieve who we were with that person, or the future we imagined. What is the real loss here?"}
+  ]},
+  {name:"Identity confusion",icon:"🧭",sub:"\"Who am I?\"",color:"#5DCAA5",
+   chips:["How to find yourself","What is identity?","Why do I feel lost?"],
+   screens:[
+    {type:"info",ey:"About identity",ti:"You are allowed to not have it figured out",bo:"Identity is not a destination you arrive at — it is a conversation you have with yourself over a lifetime. Confusion about who you are is often the beginning of real self-knowledge."},
+    {type:"affirmation",ey:"A truth",ti:"You are already someone",bo:"Your values, your patterns of care, the things that move you — these are already who you are, even if you cannot name them yet. Identity is revealed, not invented."}
+  ]},
+  {name:"Stress",icon:"🌪",sub:"Overwhelm & pressure",color:"#E24B4A",
+   chips:["How to manage stress","What stress does to the body","Is all stress bad?"],
+   screens:[
+    {type:"info",ey:"About stress",ti:"Stress is a resource — in small doses",bo:"A small amount of stress sharpens focus and motivates. Chronic stress without recovery is damaging. The key variable is not stress itself, but whether you have the capacity to recover from it."},
+    {type:"tip",ey:"Right now",ti:"Move your body for 10 minutes",bo:"Physical movement is one of the most effective stress relief tools known. A 10-minute walk lowers cortisol and resets your nervous system more effectively than almost anything else."}
+  ]},
+  {name:"Hopelessness",icon:"🌑",sub:"\"Nothing will get better\"",color:"#444441",
+   chips:["How to feel hope again","When is hopelessness dangerous?","What is hopelessness?"],
+   screens:[
+    {type:"info",ey:"About hopelessness",ti:"Hopelessness is a symptom, not a fact",bo:"When we feel hopeless, our brain presents it as an accurate assessment of reality. But hopelessness is often a symptom of depression that distorts how we see the future. It feels true; that does not mean it is."},
+    {type:"affirmation",ey:"A truth",ti:"People have recovered from exactly where you are now",bo:"The darkest moments in people's lives have been followed — sometimes slowly, sometimes surprisingly quickly — by something different. You cannot see that from inside this moment, but it has happened and it can happen again."}
+  ]},
+  {name:"Guilt",icon:"⚖️",sub:"Regret & remorse",color:"#854F0B",
+   chips:["Healthy vs toxic guilt","How to forgive yourself","What to do with guilt"],
+   screens:[
+    {type:"info",ey:"About guilt",ti:"Guilt can be a compass",bo:"Healthy guilt tells you that you acted against your values and points toward repair. Toxic guilt is disproportionate and unrelenting, often rooted in unrealistic expectations of yourself."},
+    {type:"tip",ey:"What to do",ti:"The three steps of repair",bo:"1. Acknowledge what happened without minimizing.\n2. Make amends where possible.\n3. Commit to doing differently.\n\nAfter that — let the guilt go. Continued suffering is not penance. It is stuck guilt."}
+  ]},
+  {name:"Comparison",icon:"👥",sub:"\"Everyone else has it together\"",color:"#7F77DD",
+   chips:["How to stop comparing yourself","Social media and comparison","Why do I compare?"],
+   screens:[
+    {type:"info",ey:"About comparison",ti:"You are comparing your interior to their exterior",bo:"When you compare yourself to others, you see their curated surface against your full inner life with all its doubt and struggle. It is never a fair comparison."},
+    {type:"affirmation",ey:"A truth",ti:"Your path is not their path",bo:"Comparison assumes everyone is running the same race. You are not. You have a different starting point, different obstacles, and a different destination. Their success does not diminish yours."}
+  ]},
+  {name:"Feeling numb",icon:"🌫",sub:"Disconnection & flatness",color:"#B4B2A9",
+   chips:["Why do I feel nothing?","Emotional numbness","How to reconnect with feelings"],
+   screens:[
+    {type:"info",ey:"About numbness",ti:"Numbness is protection",bo:"Emotional numbness is often the nervous system's way of managing more than it can process. It is not emptiness — it is a buffer. Beneath numbness, there are often feelings waiting to be approached safely."},
+    {type:"tip",ey:"A practice",ti:"Gentle sensory reconnection",bo:"Hold something warm or cold. Listen to music that once moved you. Smell something familiar. Physical sensation can begin to thaw emotional numbness gently, without forcing anything."}
+  ]},
+  {name:"Addiction urges",icon:"🔗",sub:"Craving & compulsion",color:"#993C1D",
+   chips:["How to handle cravings","What causes addiction?","Urge surfing technique"],
+   screens:[
+    {type:"info",ey:"About urges",ti:"An urge is a wave — it will peak and pass",bo:"Addiction urges feel permanent and unstoppable in the moment. They are not. Most urges peak within 15–30 minutes and then subside — whether you act on them or not."},
+    {type:"tip",ey:"A skill",ti:"Urge surfing",bo:"Instead of fighting or giving in to the urge, observe it. Notice where you feel it in your body. Watch it rise. Know it will fall.\n\nYou are the surfer. The urge is the wave. You do not have to be dragged under."}
+  ]},
+  {name:"Confusion",icon:"🌀",sub:"Mental fog & uncertainty",color:"#5DCAA5",
+   chips:["How to think more clearly","Brain fog causes","What to do when overwhelmed"],
+   screens:[
+    {type:"info",ey:"About confusion",ti:"Clarity often comes after action, not before",bo:"We tend to wait for clarity before moving. But our brains often only clarify through doing — through small experiments and attempts that reveal what we could not figure out by thinking alone."},
+    {type:"tip",ey:"A practice",ti:"Brain dump on paper",bo:"Set a timer for 10 minutes. Write everything in your head without editing. Do not look for answers — just empty the mental RAM.\n\nSeeing your thoughts externalized often reveals patterns your mind could not see while holding everything at once."}
+  ]},
+  {name:"Social anxiety",icon:"👤",sub:"Fear of judgment",color:"#378ADD",
+   chips:["How to overcome social anxiety","Social anxiety vs shyness","Social anxiety and performance"],
+   screens:[
+    {type:"info",ey:"About social anxiety",ti:"Others are not watching you as closely as you think",bo:"The spotlight effect is our tendency to believe we are being observed and judged far more than we actually are. Most people are focused on how they themselves are coming across."},
+    {type:"tip",ey:"A practice",ti:"Interrupt the post-event spiral",bo:"After social events, our anxious mind replays every perceived mistake. When this starts, consciously redirect: name one thing that went okay, one person you connected with, even briefly."}
+  ]},
+  {name:"Spiritual crisis",icon:"✦",sub:"Meaning & faith questions",color:"#534AB7",
+   chips:["What is a dark night of the soul?","Faith and doubt","How to find meaning"],
+   screens:[
+    {type:"info",ey:"About spiritual crisis",ti:"Doubt is not the opposite of faith — certainty is",bo:"Many of history's most revered spiritual teachers passed through profound crises of meaning and belief. The dark night of the soul is not the end of the journey — it is often the deepest part of it."},
+    {type:"affirmation",ey:"A truth",ti:"You are allowed to not have the answers",bo:"Mystery is not a failure of understanding. Some of the most important things about human life remain genuinely open. You can live meaningfully inside the questions."}
+  ]},
+  {name:"Self-criticism",icon:"💢",sub:"Self-blame & harsh inner voice",color:"#A32D2D",
+   chips:["How to stop self-criticism","Why am I so hard on myself?","Self-compassion practices"],
+   screens:[
+    {type:"info",ey:"About self-criticism",ti:"Your inner critic learned its job somewhere",bo:"The harsh inner voice often originates in messages absorbed from caregivers, culture, or painful experiences. It became a strategy for self-protection. You can acknowledge where it came from without continuing to obey it."},
+    {type:"tip",ey:"A practice",ti:"Self-compassion break",bo:"Place your hand on your heart. Say to yourself:\n\"This is a moment of suffering.\"\n\"Suffering is part of being human.\"\n\"May I be kind to myself in this moment.\"\n\nThis is not self-pity. It is what you would offer a friend."}
+  ]},
+  {name:"Feeling misunderstood",icon:"📡",sub:"Not seen or heard",color:"#0C447C",
+   chips:["How to feel more understood","Why don't people get me?","Communication and connection"],
+   screens:[
+    {type:"info",ey:"About being misunderstood",ti:"Feeling unseen is one of the deepest hungers",bo:"We do not just want to exist — we want to be known. When that need goes unmet, it cuts to something fundamental. You are not asking too much by wanting to be genuinely understood."},
+    {type:"affirmation",ey:"A truth",ti:"Someone would recognize you",bo:"The world is large. There are people whose experience maps onto yours in ways that would surprise you. Being misunderstood in one context does not mean you are impossible to know."}
+  ]},
+  {name:"Change & uncertainty",icon:"🍂",sub:"Fear of the unknown",color:"#63991A",
+   chips:["How to cope with uncertainty","Why is change so hard?","Accepting what I can't control"],
+   screens:[
+    {type:"info",ey:"About change",ti:"The mind craves certainty — but life is not certain",bo:"Intolerance of uncertainty is at the root of much anxiety. We exhaust ourselves trying to predict and control outcomes that are genuinely unpredictable. This is not a solvable problem — it is a reality to be navigated."},
+    {type:"tip",ey:"A practice",ti:"The circle of control",bo:"Draw two circles. In the inner one, list what you can control: your responses, your effort, your values, your next step. In the outer one, list what you cannot.\n\nPour your energy into the inner circle."}
+  ]}
+];
+
+var siteText = JSON.parse(localStorage.getItem('ass_sitetext') || 'null') || {
+  eyebrow: "A guide for the mind",
+  title: "You Are Not Your Thoughts",
+  intro: "Whatever is weighing on you right now, you do not have to face it alone. Choose what you are experiencing below and move through it, one gentle step at a time. This space is for you."
+};
+
+var curTopic = 0, curScreen = 0;
+
+function init() {
+  document.getElementById('disp-eyebrow').textContent = siteText.eyebrow;
+  document.getElementById('disp-title').textContent = siteText.title;
+  document.getElementById('disp-intro').textContent = siteText.intro;
+  var grid = document.getElementById('topic-grid');
+  grid.innerHTML = '';
+  topics.forEach(function(t, i) {
+    var btn = document.createElement('button');
+    btn.className = 'topic-btn';
+    btn.innerHTML = '<span class="icon">'+t.icon+'</span><span class="name">'+t.name+'</span><span class="sub">'+t.sub+'</span>';
+    btn.onclick = function(){ openTopic(i); };
+    grid.appendChild(btn);
+  });
+}
+
+function openTopic(i) {
+  curTopic = i; curScreen = 0;
+  var t = topics[i];
+  document.getElementById('home-view').style.display = 'none';
+  document.getElementById('journey-view').style.display = 'block';
+  document.getElementById('j-label').textContent = t.name.toUpperCase();
+  document.getElementById('j-title').textContent = t.name;
+  var chips = document.getElementById('j-chips');
+  chips.innerHTML = '';
+  (t.chips||[]).forEach(function(c){
+    var ch = document.createElement('button');
+    ch.className = 'chip'; ch.textContent = c;
+    ch.onclick = function(){ document.getElementById('ai-in').value = c; askAI(); };
+    chips.appendChild(ch);
+  });
+  renderScreen();
+  window.scrollTo(0,0);
+}
+
+function renderScreen() {
+  var t = topics[curTopic];
+  var s = t.screens[curScreen];
+  var prog = document.getElementById('j-progress');
+  prog.innerHTML = '';
+  t.screens.forEach(function(_,i){
+    var p = document.createElement('div');
+    p.className = 'pip'+(i<curScreen?' done':i===curScreen?' active':'');
+    prog.appendChild(p);
+  });
+  var card = document.getElementById('j-card');
+  card.className = 'card '+(s.type||'info');
+  document.getElementById('j-eyebrow').textContent = s.ey||'';
+  document.getElementById('j-ctitle').textContent = s.ti||'';
+  document.getElementById('j-body').textContent = s.bo||'';
+  document.getElementById('j-counter').textContent = (curScreen+1)+' of '+t.screens.length;
+  document.getElementById('btn-prev').disabled = curScreen===0;
+  document.getElementById('btn-next').textContent = curScreen===t.screens.length-1 ? 'Finish ✓' : 'Next →';
+  document.getElementById('ai-out').style.display='none';
+}
+
+function prev(){ if(curScreen>0){curScreen--;renderScreen();} }
+function next(){
+  var t=topics[curTopic];
+  if(curScreen<t.screens.length-1){curScreen++;renderScreen();}
+  else{goHome();}
+}
+function goHome(){
+  document.getElementById('journey-view').style.display='none';
+  document.getElementById('home-view').style.display='block';
+  window.scrollTo(0,0);
+}
+
+async function askAI(){
+  var q=document.getElementById('ai-in').value.trim();
+  if(!q)return;
+  var out=document.getElementById('ai-out');
+  out.style.display='block';
+  out.innerHTML='<div class="dots"><span></span><span></span><span></span></div>';
+  var t=topics[curTopic];
+  try{
+    var r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-6',max_tokens:1000,
+        system:'You are a compassionate mental wellness guide on a site called Anti-Suicide School. The user is reading about "'+t.name+'". Give warm, evidence-informed, concise support in 2-4 short paragraphs. Never diagnose. Always encourage professional help for serious concerns. If someone is in crisis, remind them to call or text 988.',
+        messages:[{role:'user',content:q}]
+      })
+    });
+    var d=await r.json();
+    var txt=(d.content||[]).map(function(c){return c.text||'';}).join('');
+    out.textContent=txt||'Unable to reach AI right now. Please try again.';
+  }catch(e){
+    out.textContent='Unable to connect. Please check your connection and try again.';
+  }
+  document.getElementById('ai-in').value='';
+}
+
+function openModal(){
+  document.getElementById('m-eyebrow').value=siteText.eyebrow;
+  document.getElementById('m-title').value=siteText.title;
+  document.getElementById('m-intro').value=siteText.intro;
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal(){ document.getElementById('modal').classList.remove('open'); }
+function saveModal(){
+  siteText.eyebrow=document.getElementById('m-eyebrow').value;
+  siteText.title=document.getElementById('m-title').value;
+  siteText.intro=document.getElementById('m-intro').value;
+  localStorage.setItem('ass_sitetext',JSON.stringify(siteText));
+  init();
+  closeModal();
+}
+
+init();
+</script>
+</body>
+</html>
